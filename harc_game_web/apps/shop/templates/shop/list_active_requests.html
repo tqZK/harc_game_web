@@ -10,11 +10,25 @@
 
 {% block content %}
 
+<div class="rpgui-icon empty-slot" style="float:right; margin-top:0px; margin-right:35px;"><br>głosy</div>
+<div class="rpgui-icon exclamation" style="float:right; margin-top:5px;"></div>
+<div style="float:right; margin-top:5px; margin-right:5px;"><br>Mój głos</div>
+
+<p>To jest lista próśb, które można składać do adminów.<br>
+Przy każdej prośbie podana jest liczba głosów.<br>
+Masz {{max_votes}} głosów do dyspozycji.</p>
+
 <div style="text-align: center;">
 
 {% for request in requests %}
 <div class="rpgui-container framed-golden" style="position: relative">
 	<h3>
+        <a href="{% url 'change_vote' request.id %}"><div class="rpgui-icon empty-slot" style="float:right; margin-top:0px;"><br>{{request.votes}}</div></a>
+		{% if request.users_vote %}
+        <a href="{% url 'change_vote' request.id %}"><div class="rpgui-icon exclamation" style="float:right; margin-top:0px;"></div></a>
+		{% else %}
+		<div class="rpgui-icon" style="float:right; margin-top:0px;"></div>
+		{% endif %}
 		<a href="{% url 'view_request' request.id %}">{{ request.title|capfirst }}</a>
 	</h3>
 	{% include 'shop/inner_request_view.html' %}

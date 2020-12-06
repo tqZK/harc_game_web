@@ -11,7 +11,7 @@ from django.contrib.admin.views.decorators import staff_member_required
 from apps.bank.views import BankReport
 from apps.core.views import frontpage
 from apps.posts.views import list_active_posts, list_all_posts, view_post, edit_post, new_post, delete_post
-from apps.shop.views import view_shop_offers, list_active_requests, view_request, new_request, edit_request, delete_request
+from apps.shop.views import view_shop_offers, list_active_requests, view_request, new_request, edit_request, delete_request, change_vote
 from apps.tasks.scheduler import start_scheduler
 from apps.tasks.views import UploadView, UploadCompleteView, add_completed_task, check_task, TaskView, \
     all_documented_tasks, list_completed_tasks, edit_completed_task, fav_task, unfav_task
@@ -75,6 +75,7 @@ urlpatterns = [
     path('requests/new/', new_request, name='new_request'),
     path('requests/edit/<slug:id>', edit_request, name='edit_request'),
     path('requests/delete/<slug:id>', delete_request, name='delete_request'),
+    path('requests/vote/<slug:id>', change_vote, name='change_vote'),
 
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 

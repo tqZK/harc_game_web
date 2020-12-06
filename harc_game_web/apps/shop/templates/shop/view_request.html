@@ -21,7 +21,16 @@
 {% block content %}
 <div style="text-align: center;">
     <div class="rpgui-container framed-golden" style="position: relative">
-    <h3>{{ req.title|capfirst }}</h3>
+    <h3>
+        <a href="{% url 'change_vote' req.id %}"><div class="rpgui-icon empty-slot" style="float:right; margin-top:0px;"><br>{{votes}}</div></a>
+    {% if users_vote %}
+        <a href="{% url 'change_vote' req.id %}"><div class="rpgui-icon exclamation" style="float:right; margin-top:0px;"></div></a>
+    {% else %}
+    <div class="rpgui-icon" style="float:right; margin-top:0px;"></div>
+    {% endif %}
+    <a href="{% url 'view_request' req.id %}">{{ req.title|capfirst }}</a>
+    </h3>
+
     {% include 'shop/inner_request_view.html' %}
     </div>
 </div>

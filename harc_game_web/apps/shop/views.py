@@ -2,12 +2,17 @@ from django.shortcuts import render
 from django import forms
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-from django.db.models import F
+from django.contrib.auth.models import AnonymousUser
+from django.db.models import F, Q, Count
 from django.http import HttpResponseRedirect
 from django.shortcuts import render, redirect, get_object_or_404, reverse
 from django.utils import timezone
+from django.core.exceptions import ObjectDoesNotExist
 
 from apps.shop.models import Request, Vote, CATEGORY_CHOICES, ItemOffer
+
+# Number of votes one user can have
+MAX_VOTES = 5
 
 """
 Harcerze powinni widzieć, co będą mogli kupić w grze za punkty zdobyte za zadania w aplikacji. Należy stworzyć podstronę (app) zawierającą aktualną ofertę.
@@ -51,10 +56,14 @@ def list_active_requests(request):
     """
     Function to list all requests
     """
-    requests = Request.objects.exclude(is_active=False).order_by(
-        F('date').desc(nulls_last=True)
-    )
-    return render(request, 'shop/list_active_requests.html', {'requests': requests})
+    requests = Request.objects.exclude(is_active=False) \
+            .annotate(votes=Count('vote')) \
+            .order_by(F('date').desc(nulls_last=True)
+        )
+    if not request.user.is_anonymous:
+        requests = requests.annotate(users_vote=Count('vote', filter=Q(vote__user=request.user)))
+
+    return render(request, 'shop/list_active_requests.html', {'requests': requests, 'max_votes': MAX_VOTES})
 
 
 def view_request(request, id):
@@ -62,9 +71,13 @@ def view_request(request, id):
     Function to list a single request
     """
     req = get_object_or_404(Request, id=id)
-    print(request.user)
+    votes = Vote.objects.filter(request=req).count()
+    if not request.user.is_anonymous:
+        users_vote = Vote.objects.filter(request=req, user=request.user).count()
+    else:
+        users_vote = False
     return render(request, 'shop/view_request.html', {
-            'req': req,
+            'req': req, 'votes': votes, 'users_vote': users_vote,
             'edit': req.is_active and (req.user.id is request.user.id),
             'delete': req.is_active and (req.user.id is request.user.id)
         })
@@ -145,3 +158,25 @@ def delete_request(request, id):
         req.delete()
 
     return redirect(reverse('active_requests'))
+
+
+# Votes
+
+def can_vote(user):
+    return Vote.objects.filter(user=user).count() < MAX_VOTES
+
+
+@login_required
+def change_vote(request, id):
+    try:
+        vote = Vote.objects.get(user=request.user, request__id=id)
+    except ObjectDoesNotExist:
+        if can_vote(request.user):
+            Vote.objects.create(user=request.user, request=get_object_or_404(Request, id=id))
+        else:
+            messages.error(request,f"Możesz oddać tylko {MAX_VOTES} głosów")
+
+    else:
+        vote.delete()
+    return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))
+#    return redirect(reverse('active_requests'))
