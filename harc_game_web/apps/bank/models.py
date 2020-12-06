@@ -63,7 +63,7 @@ def update_taskapproval_signal(sender, instance, created, **kwargs):
                 Bank.objects.create(
                     user=instance.documented_task.user,
                     documented_task=instance.documented_task,
-                    accrual=instance.documented_task.task.prize,
+                    accrual=instance.documented_task.task.prize * instance.documented_task.how_many_times,
                     accrual_extra_prize=instance.documented_task.task.extra_prize,
                     accrual_type='brutto'
                 )
@@ -73,7 +73,7 @@ def update_taskapproval_signal(sender, instance, created, **kwargs):
                     user=instance.documented_task.user,
                     documented_task=instance.documented_task,
                     accrual=round_half_up(
-                        instance.documented_task.task.prize * (1 - instance.documented_task.user.scout.team.tax)),
+                        instance.documented_task.task.prize * instance.documented_task.how_many_times * (1 - instance.documented_task.user.scout.team.tax)),
                     accrual_extra_prize=instance.documented_task.task.extra_prize,
                     accrual_type='netto'
                 )
@@ -91,7 +91,7 @@ def update_taskapproval_signal(sender, instance, created, **kwargs):
                         user=team_leader,
                         documented_task=instance.documented_task,
                         accrual=round_half_up(
-                            instance.documented_task.task.prize * instance.documented_task.user.scout.team.tax
+                            instance.documented_task.task.prize * instance.documented_task.how_many_times * instance.documented_task.user.scout.team.tax
                         ),
                         accrual_extra_prize=None,
                         accrual_type='tax'

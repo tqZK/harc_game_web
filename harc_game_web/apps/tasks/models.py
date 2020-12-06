@@ -2,7 +2,7 @@ from chunked_upload.models import ChunkedUpload
 from django.db import models
 from django.dispatch import receiver
 from django.utils import timezone
-
+from django.core.validators import MaxValueValidator, MinValueValidator
 from apps.core.utils import calculate_week
 from apps.users.models import FreeDay, HarcgameUser, Scout
 
@@ -60,6 +60,15 @@ class Task(models.Model):
             # bez ograniczeń
             pass
         return can_be_completed
+        
+    def can_be_completed_few_times(self, task_frequency, how_many_times):
+        if how_many_times != 1: 
+            if task_frequency == "bez ograniczeń":
+                return True
+            else:
+                return False
+        else: 
+            return True
 
     def __str__(self):
         return f"{self.category} | {self.name} ({self.allowed_completition_frequency})"
@@ -70,6 +79,7 @@ class DocumentedTask(models.Model):
     Model udokumentowanego wykonanego zadania
     """
     task = models.ForeignKey(Task, on_delete=models.RESTRICT, null=True, default=None)
+    how_many_times =  models.PositiveSmallIntegerField("Ile razy zadanie zostało wykonane", null = True, default=1, validators=[MaxValueValidator(100), MinValueValidator(1)])
     user = models.ForeignKey(HarcgameUser, on_delete=models.RESTRICT, null=True, default=None)
     date_completed = models.DateTimeField("Data ukończenia", default=timezone.now)
     date_last_edited = models.DateTimeField("Data ostatniej edycji", null=True, default=None)

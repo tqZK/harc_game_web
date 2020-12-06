@@ -65,13 +65,14 @@ class CompleteTaskForm(forms.ModelForm):
 
     class Meta:
         model = DocumentedTask
-        fields = ['task', 'comment_from_user', 'link1', 'link2', 'link3']
+        fields = ['task', 'how_many_times', 'comment_from_user', 'link1', 'link2', 'link3']
         labels = {
             "task": "Zadanie",
             "comment_from_user": "Twój komentarz",
             "link1": "Link 1",
             "link2": "Link 2",
-            "link3": "Link 3"
+            "link3": "Link 3",
+            "how_many_times": "Ile razy wykonałeś zadanie"
         }
         widgets = {
             'task': Select(attrs={'class': 'rpgui-list'}),
@@ -91,7 +92,7 @@ def add_completed_task(request, task_id=None):
             documented_task = form.save(commit=False)
             documented_task.user = request.user
 
-            if documented_task.task.can_be_completed_today(request.user):
+            if documented_task.task.can_be_completed_today(request.user) and documented_task.task.can_be_completed_few_times(documented_task.task.allowed_completition_frequency, documented_task.how_many_times):
                 documented_task.file1, documented_task.file2, documented_task.file3 = process_uploaded_files(request)
                 documented_task.save()
                 return redirect(reverse('list_completed_tasks'))
@@ -116,12 +117,13 @@ def list_completed_tasks(request):
 class EditCompletedTaskForm(forms.ModelForm):
     class Meta:
         model = DocumentedTask
-        fields = ['comment_from_user', 'link1', 'link2', 'link3']
+        fields = ['comment_from_user', 'how_many_times', 'link1', 'link2', 'link3']
         labels = {
             "comment_from_user": "Twój komentarz",
             "link1": "Link 1",
             "link2": "Link 2",
-            "link3": "Link 3"
+            "link3": "Link 3",
+            "how_many_times": "Ile razy wykonałeś zadanie"
         }
 
 

@@ -18,6 +18,7 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('date_completed', models.DateTimeField(default=django.utils.timezone.now)),
+                ('how_many_times', models.IntegerField(null=True, default=1)),
                 ('comment_from_user', models.TextField(blank=True, default='', max_length=400, null=True)),
                 ('link1', models.URLField(blank=True, default='', max_length=400, null=True)),
                 ('link2', models.URLField(blank=True, default='', max_length=400, null=True)),

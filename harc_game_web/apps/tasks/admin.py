@@ -13,7 +13,7 @@ class EventAdmin(admin.ModelAdmin):
 
 @admin.register(DocumentedTask)
 class EventAdmin(admin.ModelAdmin):
-    fields = ('task', 'user', 'date_completed', 'comment_from_user',
+    fields = ('task', 'user', 'date_completed', 'how_many_times', 'comment_from_user',
         'file1', 'file2', 'file3', 'link1', 'link2', 'link3')
     list_display = ('task', 'user', 'date_completed')
     list_filter = ('user', 'date_completed', 'task')

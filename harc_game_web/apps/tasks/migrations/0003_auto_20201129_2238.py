@@ -40,6 +40,11 @@ class Migration(migrations.Migration):
             model_name='documentedtask',
             name='comment_from_user',
             field=models.TextField(blank=True, default='', max_length=400, null=True, verbose_name='Komentarz użytkownika'),
+        ),        
+        migrations.AlterField(
+            model_name='documentedtask',
+            name='how_many_times',
+            field=models.IntegerField(default=1, null=True, verbose_name='Ile razy zostało wykonane zadanie'),
         ),
         migrations.AlterField(
             model_name='documentedtask',

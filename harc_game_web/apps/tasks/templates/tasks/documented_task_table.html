@@ -1,4 +1,5 @@
 <tr><td>Nazwa zadania</td><td>{{ task.task.name }}</td></tr>
+<tr><td>Ile razy zostało wykonane</td><td>{{ task.how_many_times }}</td></tr>
 <tr><td>Kto wykonał</td><td>{{ task.user.scout }}</td></tr>
 <tr><td>Drużyna</td><td>{{ task.user.scout.team }}</td></tr>
 <tr><td>Data ukończenia</td><td>{{ task.date_completed }}</td></tr>
@@ -13,7 +14,7 @@
 <tr><td></td><td><a href="{{ task.link2 }}">{{ task.link2|default:"" }}</a></td></tr>
 <tr><td></td><td><a href="{{ task.link3 }}">{{ task.link3|default:"" }}</a></td></tr>
 {% if task.task.prize %}
-<tr><td>Nagroda</td><td>{{ task.task.prize }}</td></tr>
+<tr><td>Nagroda</td><td>{{ task.task.prize }} x{{ task.how_many_times }}</td></tr>
 {% endif %}
 {% if task.task.extra_prize %}
 <tr><td>Nagroda specjalna</td><td>{{ task.task.extra_prize }}</td></tr>
